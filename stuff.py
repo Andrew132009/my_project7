@@ -1,5 +1,9 @@
+import os
+
 import requests as r
 import geopy
+
+from datetime import datetime
 
 
 def git_search(query, language):
@@ -33,4 +37,32 @@ def save_user_info(text):
 def read_text(filename):
     with open(filename, 'r') as file:
         res = file.read()
+    return res
+
+
+def get_forecast(lat, long):
+    url = 'https://api.openweathermap.org/data/2.5/forecast'
+    params = {
+        'lat': lat,
+        'long': long,
+        'appid': os.environ.get('WEATHER_KEY'),
+        'units': 'metric',
+        'lang': 'ru'
+    }
+
+    resp = r.get(url, params=params).json()
+    text = '<strong>{}</strong> <i>{}</i>: \n{}C, {}\n\n'
+    res = ''
+
+    for data in resp['list']:
+        date = datetime.fromtimestamp(data['dt'])
+        date_res = date.strftime('%d.%m.%y')
+        temp = data['main']['temp']
+        weather = data['weather'][0]['description']
+        if date.hour == 15:
+            daytime = 'днём'
+            res += text.format(date_res, daytime, temp, weather)
+        elif date.hour == 21:
+            daytime = 'вечером'
+            res += text.format(date_res, daytime, temp, weather)
     return res
