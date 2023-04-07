@@ -32,7 +32,7 @@ def button_message(message):
     btn2 = telebot.types.KeyboardButton('Поделиться локацией', request_location=True)
     #markup.add(btn1)
     markup.add(btn2)
-    bot.send_message(message.chat.id, 'Чтобы узнать погоду поделись со мной локацией', reply_markup=markup)
+    bot.send_message(message.chat.id, 'Чтобы узнать погоду, поделись со мной локацией.', reply_markup=markup)
 
 
 @bot.message_handler(content_types=['contact', 'location'])
@@ -43,7 +43,7 @@ def contact(message):
         lat = message.location.latitude
         long = message.location.longitude
         city = get_city(lat, long)
-        msg = f'Твой город: {city}'
+        msg = f'Твой город: {city["city"]}, {city["country"]}'
         forecast = get_forecast(lat, long)
         bot.send_message(message.chat.id, msg)
         bot.send_message(message.chat.id, text=forecast, parse_mode='html')
